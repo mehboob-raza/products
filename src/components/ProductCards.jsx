@@ -2,6 +2,7 @@
 import { Box, Card, Typography, Grid, Container } from '@mui/material';
 import React, { useEffect, useState } from 'react';
 import Categories from './Categories';
+import SearchBar from './SearchField.jsx'; // Import the SearchBar component
 import { useSelector, useDispatch } from 'react-redux';
 import { fetchProducts } from '../store/productSlice.js';
 
@@ -12,14 +13,14 @@ const ProductCards = () => {
   const selectedFilter = useSelector((state) => state.products.selectedFilter);
 
   const [filteredProducts, setFilteredProducts] = useState([]);
+  const [searchTerm, setSearchTerm] = useState('');
 
   useEffect(() => {
     dispatch(fetchProducts());
   }, [dispatch]);
-  
+
   const filterProducts = () => {
     let filtered = [...products];
-    console.log('filtered', filtered);
 
     if (selectedCategory) {
       filtered = filtered.filter((product) => product.category === selectedCategory);
@@ -28,22 +29,29 @@ const ProductCards = () => {
     if (selectedFilter === 'price') {
       filtered.sort((a, b) => a?.price - b?.price);
     } else if (selectedFilter === 'rating') {
-
       filtered.sort((a, b) => b?.rating - a?.rating);
+    }
+
+    if (searchTerm) {
+      filtered = filtered.filter((product) =>
+        product.productName.toLowerCase().includes(searchTerm.toLowerCase())
+      );
     }
 
     setFilteredProducts(filtered);
   };
+
   useEffect(() => {
     filterProducts();
-  }, [products, selectedCategory, selectedFilter]);
-
-
+  }, [products, selectedCategory, selectedFilter, searchTerm]);
 
   return (
     <Box>
       <Container maxWidth='lg'>
-        <Categories />
+        <Box display='flex' justifyContent='space-around' alignItems='center'>
+          <Categories />
+          <SearchBar onSearch={setSearchTerm} />
+        </Box>
         <Box mt={8}>
           <Typography variant='h3' sx={{ mb: 4 }}> Products </Typography>
           <Grid container spacing={1}>

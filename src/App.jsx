@@ -1,5 +1,5 @@
 // App.js
-import React, { useEffect, useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Container, Typography } from '@mui/material';
 import ProductCards from './components/ProductCards';
 import Sidebar from './components/Sidebar';
