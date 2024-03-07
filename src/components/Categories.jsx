@@ -1,8 +1,7 @@
-// Categories.js
 import React, { useEffect } from 'react';
-import { Button } from '@mui/material';
+import { Button, Menu, MenuItem } from '@mui/material';
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchProducts, selectCategory } from '../store/productSlice';
+import { fetchProducts, setCategory } from '../store/productSlice.js';
 
 const Categories = () => {
   const dispatch = useDispatch();
@@ -14,20 +13,48 @@ const Categories = () => {
   }, [dispatch]);
 
   const handleCategoryClick = (category) => {
-    dispatch(selectCategory(category === selectedCategory ? null : category));
+    dispatch(setCategory(category === selectedCategory ? null : category));
+  };
+
+  const [anchorEl, setAnchorEl] = React.useState(null);
+
+  const handleClick = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleClose = () => {
+    setAnchorEl(null);
   };
 
   return (
     <div>
-      {Array.from(new Set(categories)).map((category) => (
-        <Button
-          key={category}
-          onClick={() => handleCategoryClick(category)}
-          disabled={selectedCategory === category}
-        >
-          {category}
-        </Button>
-      ))}
+      <Button
+        id="category-button"
+        aria-controls="category-menu"
+        aria-haspopup="true"
+        onClick={handleClick}
+      >
+        {selectedCategory || 'Select Category'}
+      </Button>
+      <Menu
+        id="category-menu"
+        anchorEl={anchorEl}
+        keepMounted
+        open={Boolean(anchorEl)}
+        onClose={handleClose}
+      >
+        {Array.from(new Set(categories)).map((category) => (
+          <MenuItem
+            key={category}
+            onClick={() => {
+              handleCategoryClick(category);
+              handleClose();
+            }}
+          >
+            {category}
+          </MenuItem>
+        ))}
+      </Menu>
     </div>
   );
 };
